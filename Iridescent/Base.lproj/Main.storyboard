@@ -7,7 +7,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -29,9 +28,9 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="$0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3JH-ty-Q0S">
-                                        <rect key="frame" x="305" y="12" width="22" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="$1234" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3JH-ty-Q0S">
+                                        <rect key="frame" x="262.5" y="12" width="64.5" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="20"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -41,17 +40,9 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MME-8a-Q6d">
-                                        <rect key="frame" x="19" y="54" width="304" height="162"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="MME-8a-Q6d" secondAttribute="height" multiplier="15:8" id="juv-Ka-Eod"/>
-                                        </constraints>
-                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="MME-8a-Q6d" firstAttribute="centerX" secondItem="nty-M5-R9g" secondAttribute="centerX" id="0yb-TD-Lfu"/>
                                     <constraint firstItem="thl-60-011" firstAttribute="top" secondItem="y77-2G-Hmg" secondAttribute="top" id="Hlt-CP-CoP"/>
                                     <constraint firstItem="3JH-ty-Q0S" firstAttribute="top" secondItem="nty-M5-R9g" secondAttribute="top" constant="12" id="LEM-1R-pba"/>
                                     <constraint firstItem="thl-60-011" firstAttribute="leading" secondItem="y77-2G-Hmg" secondAttribute="trailing" constant="2" id="MYr-MW-of4"/>
@@ -59,9 +50,8 @@
                                     <constraint firstAttribute="trailing" secondItem="3JH-ty-Q0S" secondAttribute="trailing" constant="16" id="QPv-5n-xzq"/>
                                     <constraint firstAttribute="width" secondItem="nty-M5-R9g" secondAttribute="height" multiplier="85.6:53.98" id="XlW-CI-rXz"/>
                                     <constraint firstAttribute="width" secondItem="nty-M5-R9g" secondAttribute="height" multiplier="85.6:53.98" id="dmr-qk-Q9Y"/>
-                                    <constraint firstAttribute="bottom" secondItem="MME-8a-Q6d" secondAttribute="bottom" id="jSc-bQ-KMj"/>
                                     <constraint firstItem="y77-2G-Hmg" firstAttribute="leading" secondItem="nty-M5-R9g" secondAttribute="leading" constant="16" id="qJr-oK-HGK"/>
-                                    <constraint firstItem="MME-8a-Q6d" firstAttribute="height" secondItem="nty-M5-R9g" secondAttribute="height" multiplier="3:4" id="usy-N9-9jc"/>
+                                    <constraint firstItem="3JH-ty-Q0S" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="thl-60-011" secondAttribute="trailing" id="qO9-uF-q9F"/>
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ARp-Mz-pgt">
@@ -76,7 +66,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="1" maxValue="4" translatesAutoresizingMaskIntoConstraints="NO" id="Ggq-Gp-i1b">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2.5" minValue="1" maxValue="4" translatesAutoresizingMaskIntoConstraints="NO" id="Ggq-Gp-i1b">
                                 <rect key="frame" x="46" y="617" width="283" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="445-qO-2Ff"/>
@@ -110,7 +100,6 @@
                         <outlet property="cashLabel" destination="thl-60-011" id="a7v-Qi-okV"/>
                         <outlet property="factorSlider" destination="Ggq-Gp-i1b" id="miq-z8-5Hg"/>
                         <outlet property="logView" destination="ARp-Mz-pgt" id="dXR-1r-Dc6"/>
-                        <outlet property="patternView" destination="MME-8a-Q6d" id="aX5-Jg-f3g"/>
                         <outlet property="payLabel" destination="y77-2G-Hmg" id="WoP-gh-d8M"/>
                         <outlet property="valueLabel" destination="3JH-ty-Q0S" id="eZj-Bb-I8b"/>
                     </connections>

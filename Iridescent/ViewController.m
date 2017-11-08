@@ -21,6 +21,7 @@
 #define kALG                    89.f
 #define kALB                    145.f
 #define kDefaultColors          @[(id)[UIColorFromRGB(0x9E89E2) CGColor], (id)[UIColorFromRGB(0x825991) CGColor]]
+#define kBackgroundColors       @[(id)[UIColorFromRGB(0x141414) CGColor], (id)[UIColorFromRGB(0x030303) CGColor]]
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -32,14 +33,12 @@
 @property (strong, nonatomic)   CMMotionManager *motionManager;
 @property (nonatomic)           CMAttitude *referenceAttitude;
 @property (strong, nonatomic)   CAGradientLayer *gradientLayer;
-@property (strong, nonatomic)   CATextLayer *textLayer;
 
 @property (weak, nonatomic) IBOutlet UILabel *payLabel;
 @property (weak, nonatomic) IBOutlet UILabel *cashLabel;
 @property (weak, nonatomic) IBOutlet UILabel *valueLabel;
 
 @property (weak, nonatomic) IBOutlet UIView *cardView;
-@property (weak, nonatomic) IBOutlet UIView *patternView;
 @property (weak, nonatomic) IBOutlet UILabel *logView;
 @property (weak, nonatomic) IBOutlet UISlider *factorSlider;
 
@@ -81,24 +80,30 @@
     _payLabel.textColor =
     _cashLabel.textColor =
     _valueLabel.textColor = [UIColor whiteColor];
-    _patternView.layer.backgroundColor =
-    _cardView.layer.backgroundColor = [UIColor blackColor].CGColor;
-    _cardView.layer.cornerRadius  = 10.f;
+    _cardView.layer.backgroundColor = [UIColor clearColor].CGColor;
+    CAGradientLayer *backgroundGradientLayer = [CAGradientLayer layer];
+    backgroundGradientLayer.frame         = _cardView.bounds;
+    backgroundGradientLayer.colors        = kBackgroundColors;
+    backgroundGradientLayer.cornerRadius  = 10.f;
+    [_cardView.layer insertSublayer:backgroundGradientLayer atIndex:0];
     
     _gradientLayer = [CAGradientLayer layer];
-    _gradientLayer.frame         = _patternView.bounds;
+    _gradientLayer.frame         = _cardView.bounds;
     _gradientLayer.colors        = kDefaultColors;
     
-    _textLayer = [CATextLayer new];
-    _textLayer.frame = _gradientLayer.frame;
-    _textLayer.string = @"";
-    _textLayer.alignmentMode = kCAAlignmentCenter;
-    _textLayer.fontSize = _gradientLayer.frame.size.height * .8f;
-    _gradientLayer.mask = _textLayer;
-//    [_cardView.layer addSublayer:_gradientLayer];
+//    CATextLayer *textLayer = [CATextLayer new];
+//    textLayer.frame = _gradientLayer.frame;
+//    textLayer.string = @"$";
+//    textLayer.alignmentMode = kCAAlignmentCenter;
+//    textLayer.fontSize = _gradientLayer.frame.size.height * .8f;
+//    _gradientLayer.mask = textLayer;
     
-    [_patternView.layer insertSublayer:_gradientLayer
-                               atIndex:0];
+    CALayer *imageLayer = [CALayer new];
+    imageLayer.frame = _gradientLayer.frame;
+    imageLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
+    _gradientLayer.mask = imageLayer;
+    
+    [_cardView.layer addSublayer:_gradientLayer];
     
     _motionManager = [CMMotionManager new];
     
@@ -143,7 +148,8 @@
 
 - (void)dealloc
 {
-    if ([_motionManager isDeviceMotionActive]) {
+    if (_motionManager &&
+        [_motionManager isDeviceMotionActive]) {
         [_motionManager stopDeviceMotionUpdates];
     }
 }
