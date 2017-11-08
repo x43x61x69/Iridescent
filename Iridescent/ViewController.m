@@ -37,6 +37,8 @@
 
 @interface ViewController ()
 
+@property (nonatomic)           CGFloat brightness;
+
 @property (strong, nonatomic)   CMMotionManager *motionManager;
 @property (nonatomic)           CMAttitude *referenceAttitude;
 @property (strong, nonatomic)   CAGradientLayer *gradientLayer;
@@ -59,9 +61,13 @@
         return;
     }
     
-    CGFloat f = (CGFloat)(MIN(1.f, fabs(attitude.pitch + attitude.roll + attitude.yaw) * _factorSlider.value / M_PI));
+    CGFloat f, xU, yU, zU, xL, yL, zL;
     
-    CGFloat xU, yU, zU, xL, yL, zL;
+    f = (CGFloat)(fabs(attitude.pitch + attitude.roll + attitude.yaw) / M_PI * _factorSlider.value);
+    
+    if (f > 1.f) {
+        f = 1.f - fmod(f, 1.f);
+    }
     
     xU = kAUR + (kOUR - kAUR) * f;
     yU = kAUG + (kOUG - kAUG) * f;
@@ -112,6 +118,34 @@
     
     [_cardView.layer addSublayer:_gradientLayer];
     
+//    [self setup];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillTerminate:)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    if (_motionManager &&
+        [_motionManager isDeviceMotionActive]) {
+        [_motionManager stopDeviceMotionUpdates];
+    }
+}
+
+- (void)setup
+{
+    _brightness = [UIScreen mainScreen].brightness;
+    
     _motionManager = [CMMotionManager new];
     
     if ([_motionManager isDeviceMotionAvailable]) {
@@ -124,6 +158,7 @@
                                                             withHandler:^(CMDeviceMotion *motion,
                                                                           NSError *error)
              {
+                 [UIScreen mainScreen].brightness = 1.f;
                  if (!error &&
                      motion) {
                      if (!_referenceAttitude) {
@@ -143,22 +178,40 @@
              }];
         }
     } else {
-        NSLog(@"Gyroscope is unavailable.");
+        _logView.text = @"Gyroscope is unavailable.";
     }
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    _referenceAttitude = nil;
-}
-
-- (void)dealloc
+- (void)stop
 {
     if (_motionManager &&
         [_motionManager isDeviceMotionActive]) {
         [_motionManager stopDeviceMotionUpdates];
+        _motionManager = nil;
+        [UIScreen mainScreen].brightness = _brightness;
     }
+}
+
+- (void)applicationDidBecomeActive:(NSNotification*)notification
+{
+    _referenceAttitude = nil;
+    [self setup];
+}
+
+- (void)applicationWillResignActive:(NSNotification*)notification
+{
+    [self stop];
+}
+
+- (void)applicationWillTerminate:(NSNotification*)notification
+{
+    [self stop];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (IBAction)resetReference:(id)sender
+{
+    _referenceAttitude = nil;
 }
 
 @end
