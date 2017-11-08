@@ -55,37 +55,6 @@
 
 @implementation ViewController
 
-- (void)gradientWithAttitude:(CMAttitude *)attitude
-{
-    if (!attitude) {
-        return;
-    }
-    
-    CGFloat f, xU, yU, zU, xL, yL, zL;
-    
-    f = (CGFloat)(fabs(attitude.pitch + attitude.roll + attitude.yaw) / M_PI * _factorSlider.value);
-    
-    if (f > 1.f) {
-        f = 1.f - fmod(f, 1.f);
-    }
-    
-    xU = kAUR + (kOUR - kAUR) * f;
-    yU = kAUG + (kOUG - kAUG) * f;
-    zU = kAUB + (kOUB - kAUB) * f;
-    xL = kALR + (kOLR - kALR) * f;
-    yL = kALG + (kOLG - kALG) * f;
-    zL = kALB + (kOLB - kALB) * f;
-    
-    _gradientLayer.colors = @[(id)[[UIColor colorWithRed:xU / 255.f
-                                                   green:yU / 255.f
-                                                    blue:zU / 255.f
-                                                   alpha:1.f] CGColor],
-                              (id)[[UIColor colorWithRed:xL / 255.f
-                                                   green:yL / 255.f
-                                                    blue:zL / 255.f
-                                                   alpha:1.f] CGColor]];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -142,6 +111,8 @@
     }
 }
 
+#pragma mark - Misc
+
 - (void)setup
 {
     _brightness = [UIScreen mainScreen].brightness;
@@ -192,22 +163,57 @@
     }
 }
 
-- (void)applicationDidBecomeActive:(NSNotification*)notification
+- (void)gradientWithAttitude:(CMAttitude *)attitude
+{
+    if (!attitude) {
+        return;
+    }
+    
+    CGFloat f, xU, yU, zU, xL, yL, zL;
+    
+    f = (CGFloat)(fabs(attitude.pitch + attitude.roll + attitude.yaw) / M_PI * _factorSlider.value);
+    
+    if (f > 1.f) {
+        f = 1.f - fmod(f, 1.f);
+    }
+    
+    xU = kAUR + (kOUR - kAUR) * f;
+    yU = kAUG + (kOUG - kAUG) * f;
+    zU = kAUB + (kOUB - kAUB) * f;
+    xL = kALR + (kOLR - kALR) * f;
+    yL = kALG + (kOLG - kALG) * f;
+    zL = kALB + (kOLB - kALB) * f;
+    
+    _gradientLayer.colors = @[(id)[[UIColor colorWithRed:xU / 255.f
+                                                   green:yU / 255.f
+                                                    blue:zU / 255.f
+                                                   alpha:1.f] CGColor],
+                              (id)[[UIColor colorWithRed:xL / 255.f
+                                                   green:yL / 255.f
+                                                    blue:zL / 255.f
+                                                   alpha:1.f] CGColor]];
+}
+
+#pragma mark - NSNotification
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     _referenceAttitude = nil;
     [self setup];
 }
 
-- (void)applicationWillResignActive:(NSNotification*)notification
+- (void)applicationWillResignActive:(NSNotification *)notification
 {
     [self stop];
 }
 
-- (void)applicationWillTerminate:(NSNotification*)notification
+- (void)applicationWillTerminate:(NSNotification *)notification
 {
     [self stop];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - IBAction
 
 - (IBAction)resetReference:(id)sender
 {
