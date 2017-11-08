@@ -6,10 +6,10 @@
 //  Copyright © 2017 Cai. All rights reserved.
 //
 
-#define redFromRGB(rgbValue)    ((CGFloat)((rgbValue & 0xFF0000) >> 16))
-#define greenFromRGB(rgbValue)  ((CGFloat)((rgbValue & 0xFF00) >> 8))
-#define blueFromRGB(rgbValue)   ((CGFloat)(rgbValue & 0xFF))
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((CGFloat)((rgbValue & 0xFF0000) >> 16))/255.f green:((CGFloat)((rgbValue & 0xFF00) >> 8))/255.f blue:((CGFloat)(rgbValue & 0xFF))/255.f alpha:1.0]
+#define redFromRGB(rgb)         ((CGFloat)((rgb & 0xFF0000) >> 16))
+#define greenFromRGB(rgb)       ((CGFloat)((rgb & 0xFF00) >> 8))
+#define blueFromRGB(rgb)        ((CGFloat)(rgb & 0xFF))
+#define UIColorFromRGB(rgb)     [UIColor colorWithRed:((CGFloat)((rgb & 0xFF0000) >> 16))/255.f green:((CGFloat)((rgb & 0xFF00) >> 8))/255.f blue:((CGFloat)(rgb & 0xFF))/255.f alpha:1.f]
 
 #define kGradientUpdateInterval 1.f / 60.f // Screen refresh rate = 60Hz
 #define kGradientFactor         2.f
@@ -73,21 +73,12 @@
     _gradientLayer.frame         = _cardView.bounds;
     _gradientLayer.colors        = kDefaultColors;
     
-//    CATextLayer *textLayer = [CATextLayer new];
-//    textLayer.frame = _gradientLayer.frame;
-//    textLayer.string = @"$";
-//    textLayer.alignmentMode = kCAAlignmentCenter;
-//    textLayer.fontSize = _gradientLayer.frame.size.height * .8f;
-//    _gradientLayer.mask = textLayer;
-    
     CALayer *imageLayer = [CALayer new];
     imageLayer.frame = _gradientLayer.frame;
     imageLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
     _gradientLayer.mask = imageLayer;
     
     [_cardView.layer addSublayer:_gradientLayer];
-    
-//    [self setup];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -165,7 +156,8 @@
 
 - (void)gradientWithAttitude:(CMAttitude *)attitude
 {
-    if (!attitude) {
+    if (!attitude ||
+        !_gradientLayer) {
         return;
     }
     
