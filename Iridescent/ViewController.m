@@ -6,24 +6,31 @@
 //  Copyright © 2017 Cai. All rights reserved.
 //
 
+#define redFromRGB(rgbValue)    ((CGFloat)((rgbValue & 0xFF0000) >> 16))
+#define greenFromRGB(rgbValue)  ((CGFloat)((rgbValue & 0xFF00) >> 8))
+#define blueFromRGB(rgbValue)   ((CGFloat)(rgbValue & 0xFF))
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((CGFloat)((rgbValue & 0xFF0000) >> 16))/255.f green:((CGFloat)((rgbValue & 0xFF00) >> 8))/255.f blue:((CGFloat)(rgbValue & 0xFF))/255.f alpha:1.0]
+
 #define kGradientUpdateInterval 1.f / 60.f // Screen refresh rate = 60Hz
 #define kGradientFactor         2.f
-#define kOUR                    93.f
-#define kOUG                    222.f
-#define kOUB                    236.f
-#define kOLR                    212.f
-#define kOLG                    157.f
-#define kOLB                    99.f
-#define kAUR                    158.f
-#define kAUG                    137.f
-#define kAUB                    226.f
-#define kALR                    130.f
-#define kALG                    89.f
-#define kALB                    145.f
-#define kDefaultColors          @[(id)[UIColorFromRGB(0x9E89E2) CGColor], (id)[UIColorFromRGB(0x825991) CGColor]]
+#define kDefaultColorUpper      0x5DDEEC
+#define kDefaultColorLower      0xD49D63
+#define kAlternateColorUpper    0x9E89E2
+#define kAlternateColorLower    0x825991
+#define kOUR                    redFromRGB(kDefaultColorUpper)
+#define kOUG                    greenFromRGB(kDefaultColorUpper)
+#define kOUB                    blueFromRGB(kDefaultColorUpper)
+#define kOLR                    redFromRGB(kDefaultColorLower)
+#define kOLG                    greenFromRGB(kDefaultColorLower)
+#define kOLB                    blueFromRGB(kDefaultColorLower)
+#define kAUR                    redFromRGB(kAlternateColorUpper)
+#define kAUG                    greenFromRGB(kAlternateColorUpper)
+#define kAUB                    blueFromRGB(kAlternateColorUpper)
+#define kALR                    redFromRGB(kAlternateColorLower)
+#define kALG                    greenFromRGB(kAlternateColorLower)
+#define kALB                    blueFromRGB(kAlternateColorLower)
+#define kDefaultColors          @[(id)[UIColorFromRGB(kAlternateColorUpper) CGColor], (id)[UIColorFromRGB(kAlternateColorLower) CGColor]]
 #define kBackgroundColors       @[(id)[UIColorFromRGB(0x141414) CGColor], (id)[UIColorFromRGB(0x030303) CGColor]]
-
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 #import "ViewController.h"
 #import <CoreMotion/CoreMotion.h>
