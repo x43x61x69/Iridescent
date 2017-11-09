@@ -168,7 +168,7 @@
     
     _gradientLayer.startPoint = CGPointMake((xf + 1) / 2, yf);
     _gradientLayer.endPoint = CGPointMake(.5f, 1);
-    _gradientLayer.locations = @[@(gf/2), @(gf), @1];
+    _gradientLayer.locations = @[@(gf/3), @(gf), @1];
     _gradientLayer.colors = @[(id)[UIColorFromRGB(kDefaultColorUpper) CGColor],
                               (id)[[UIColorFromRGB(kDefaultColorLower) colorWithAlphaComponent:gf*2] CGColor],
                               (id)[[UIColorFromRGB(kAlternateColorLower) colorWithAlphaComponent:gf] CGColor]];
