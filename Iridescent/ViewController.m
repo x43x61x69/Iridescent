@@ -23,8 +23,6 @@
 
 @interface ViewController ()
 
-@property (nonatomic)           CGFloat brightness;
-
 @property (strong, nonatomic)   CMMotionManager *motionManager;
 @property (nonatomic)           CMAttitude *referenceAttitude;
 @property (strong, nonatomic)   CAGradientLayer *gradientLayer;
@@ -34,6 +32,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *valueLabel;
 
 @property (weak, nonatomic) IBOutlet UIView *cardView;
+@property (weak, nonatomic) IBOutlet UIButton *resetButton;
 @property (weak, nonatomic) IBOutlet UILabel *logView;
 @property (weak, nonatomic) IBOutlet UISlider *factorSlider;
 
@@ -45,10 +44,17 @@
 {
     [super viewDidLoad];
     
+    _factorSlider.maximumValue = 2 * M_PI;
+    _factorSlider.value = M_PI;
+    
     _payLabel.textColor =
     _cashLabel.textColor =
     _valueLabel.textColor = [UIColor whiteColor];
     _cardView.layer.backgroundColor = [UIColor clearColor].CGColor;
+    
+    _resetButton.layer.cornerRadius = 4.f;
+    _resetButton.layer.borderWidth = 1.f;
+    _resetButton.layer.borderColor = _resetButton.tintColor.CGColor;
     
     CAGradientLayer *backgroundGradientLayer = [CAGradientLayer layer];
     backgroundGradientLayer.frame         = _cardView.bounds;
@@ -102,21 +108,16 @@
 
 - (void)setup
 {
-    _brightness = [UIScreen mainScreen].brightness;
-    
     _motionManager = [CMMotionManager new];
     
     if ([_motionManager isDeviceMotionAvailable]) {
-        if (![_motionManager isDeviceMotionActive] &&
-            ([CMMotionManager availableAttitudeReferenceFrames] & CMAttitudeReferenceFrameXMagneticNorthZVertical)) {
+        if (![_motionManager isDeviceMotionActive]) {
             _motionManager.deviceMotionUpdateInterval = kGradientUpdateInterval;
             _motionManager.showsDeviceMovementDisplay = YES;
-            [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXMagneticNorthZVertical
-                                                                toQueue:[NSOperationQueue mainQueue]
+            [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue]
                                                             withHandler:^(CMDeviceMotion *motion,
                                                                           NSError *error)
              {
-                 [UIScreen mainScreen].brightness = 1.f;
                  if (!error &&
                      motion) {
                      if (!_referenceAttitude) {
@@ -126,10 +127,14 @@
                          [currentAttitude multiplyByInverseOfAttitude:_referenceAttitude];
                          [self gradientWithAttitude:currentAttitude];
                          
-                         _logView.text = [NSString stringWithFormat:@"Motion: %.02f, %.02f, %.02f\nFactor: %.02f",
+                         _logView.text = [NSString stringWithFormat:@"Motion: %.02f, %.02f, %.02f\nPoints: (%.02f, %.02f) -> (%.02f, %.02f)\nFactor: %.02f",
                                           currentAttitude.pitch,
                                           currentAttitude.roll,
                                           currentAttitude.yaw,
+                                          _gradientLayer.startPoint.x,
+                                          _gradientLayer.startPoint.y,
+                                          _gradientLayer.endPoint.x,
+                                          _gradientLayer.endPoint.y,
                                           _factorSlider.value];
                      }
                  }
@@ -146,7 +151,6 @@
         [_motionManager isDeviceMotionActive]) {
         [_motionManager stopDeviceMotionUpdates];
         _motionManager = nil;
-        [UIScreen mainScreen].brightness = _brightness;
     }
 }
 
@@ -157,24 +161,17 @@
         return;
     }
     
-    CGFloat xf = (CGFloat)(fabs(attitude.pitch) / M_PI * _factorSlider.value);
-    CGFloat yf = (CGFloat)(fabs(attitude.roll) / M_PI * _factorSlider.value);
-    CGFloat gf = pow((pow(xf, 2) + pow(yf, 2)), .5);
+    const CGFloat zCos = fabs(cos(attitude.yaw));
+    const CGFloat xf = (MAX(-1, MIN(1, attitude.roll / M_PI * _factorSlider.value)) * zCos);
+    const CGFloat yf = fabs((MIN(0, attitude.pitch / M_PI * _factorSlider.value)) * zCos);
+    const CGFloat gf = MIN(.9f, pow((pow(xf, 2) + pow(yf, 2)), .5)) / pow(2, .5);
     
-    if (xf > 1.f) {
-        xf = 1.f - fmod(xf, 1.f);
-    }
-    
-    if (yf > 1.f) {
-        yf = 1.f - fmod(yf, 1.f);
-    }
-    
-    _gradientLayer.startPoint = CGPointMake(xf, yf);
-    _gradientLayer.endPoint = CGPointMake(1.f - xf, 1.f - yf);
-    _gradientLayer.locations = @[@(gf/2.f), @(gf), @1];
+    _gradientLayer.startPoint = CGPointMake((xf + 1) / 2, yf);
+    _gradientLayer.endPoint = CGPointMake(.5f, 1);
+    _gradientLayer.locations = @[@(gf/2), @(gf), @1];
     _gradientLayer.colors = @[(id)[UIColorFromRGB(kDefaultColorUpper) CGColor],
-                              (id)[UIColorFromRGB(kDefaultColorLower) CGColor],
-                              (id)[[UIColor clearColor] CGColor]];
+                              (id)[[UIColorFromRGB(kDefaultColorLower) colorWithAlphaComponent:gf*2] CGColor],
+                              (id)[[UIColorFromRGB(kAlternateColorLower) colorWithAlphaComponent:gf] CGColor]];
 }
 
 #pragma mark - NSNotification
