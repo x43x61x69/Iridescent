@@ -44,9 +44,6 @@
 {
     [super viewDidLoad];
     
-    _factorSlider.maximumValue = 2 * M_PI;
-    _factorSlider.value = M_PI;
-    
     _payLabel.textColor =
     _cashLabel.textColor =
     _valueLabel.textColor = [UIColor whiteColor];
@@ -56,31 +53,7 @@
     _resetButton.layer.borderWidth = 1.f;
     _resetButton.layer.borderColor = _resetButton.tintColor.CGColor;
     
-    CAGradientLayer *backgroundGradientLayer = [CAGradientLayer layer];
-    backgroundGradientLayer.frame         = _cardView.bounds;
-    backgroundGradientLayer.colors        = kBackgroundColors;
-    backgroundGradientLayer.cornerRadius  = 10.f;
-    [_cardView.layer insertSublayer:backgroundGradientLayer atIndex:0];
-    
-    CAGradientLayer *gradientBackgroundLayer = [CAGradientLayer layer];
-    gradientBackgroundLayer.frame = _cardView.bounds;
-    gradientBackgroundLayer.colors = kAlternateColors;
-    
-    CALayer *imageBackgroundLayer = [CALayer new];
-    imageBackgroundLayer.frame = gradientBackgroundLayer.frame;
-    imageBackgroundLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
-    gradientBackgroundLayer.mask = imageBackgroundLayer;
-    [_cardView.layer addSublayer:gradientBackgroundLayer];
-    
-    _gradientLayer = [CAGradientLayer layer];
-    _gradientLayer.frame = _cardView.bounds;
-    _gradientLayer.colors = kAlternateColors;
-    
-    CALayer *imageLayer = [CALayer new];
-    imageLayer.frame = _gradientLayer.frame;
-    imageLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
-    _gradientLayer.mask = imageLayer;
-    [_cardView.layer addSublayer:_gradientLayer];
+    [self setup];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -107,6 +80,39 @@
 #pragma mark - Misc
 
 - (void)setup
+{
+    if (_cardView) {
+//        _cardView.layer.sublayers = nil;
+    }
+    
+    CAGradientLayer *backgroundGradientLayer = [CAGradientLayer layer];
+    backgroundGradientLayer.frame         = _cardView.bounds;
+    backgroundGradientLayer.colors        = kBackgroundColors;
+    backgroundGradientLayer.cornerRadius  = 10.f;
+    [_cardView.layer insertSublayer:backgroundGradientLayer atIndex:0];
+    
+    CAGradientLayer *gradientBackgroundLayer = [CAGradientLayer layer];
+    gradientBackgroundLayer.frame = _cardView.bounds;
+    gradientBackgroundLayer.colors = kAlternateColors;
+    
+    CALayer *imageBackgroundLayer = [CALayer new];
+    imageBackgroundLayer.frame = gradientBackgroundLayer.frame;
+    imageBackgroundLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
+    gradientBackgroundLayer.mask = imageBackgroundLayer;
+    [_cardView.layer addSublayer:gradientBackgroundLayer];
+    
+    _gradientLayer = [CAGradientLayer layer];
+    _gradientLayer.frame = _cardView.bounds;
+    _gradientLayer.colors = kAlternateColors;
+    
+    CALayer *imageLayer = [CALayer new];
+    imageLayer.frame = _gradientLayer.frame;
+    imageLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
+    _gradientLayer.mask = imageLayer;
+    [_cardView.layer addSublayer:_gradientLayer];
+}
+
+- (void)motionManagerSetup
 {
     _motionManager = [CMMotionManager new];
     
@@ -162,12 +168,22 @@
     }
     
     const CGFloat zCos = fabs(cos(attitude.yaw));
-    const CGFloat xf = (MAX(-1, MIN(1, attitude.roll / M_PI * _factorSlider.value)) * zCos);
-    const CGFloat yf = fabs((MIN(0, attitude.pitch / M_PI * _factorSlider.value)) * zCos);
-    const CGFloat gf = MIN(.9f, pow((pow(xf, 2) + pow(yf, 2)), .5)) / pow(2, .5);
+    CGFloat xf = MAX(-1, MIN(1, attitude.roll / M_PI * _factorSlider.value * zCos));
+    const CGFloat yf = MIN(1, fabs((MIN(0, attitude.pitch / M_PI * _factorSlider.value * zCos))));
+    const CGFloat gf = pow((pow(xf, 2) + pow(yf, 2)), .5) / pow(2, .5);
     
-    _gradientLayer.startPoint = CGPointMake((xf + 1) / 2, yf);
-    _gradientLayer.endPoint = CGPointMake(.5f, 1);
+    xf = (xf + 1) / 2;
+    _gradientLayer.startPoint = CGPointMake(xf, yf);
+    
+    if (xf > .33f && xf < .66f) {
+        xf = .5f;
+    } else if (xf < .33f) {
+        xf = .66f;
+    } else {
+        xf = .33f;
+    }
+    _gradientLayer.endPoint = CGPointMake(xf, 1.2f);
+    
     _gradientLayer.locations = @[@(gf/3), @(gf), @1];
     _gradientLayer.colors = @[(id)[UIColorFromRGB(kDefaultColorUpper) CGColor],
                               (id)[[UIColorFromRGB(kDefaultColorLower) colorWithAlphaComponent:gf*2] CGColor],
@@ -179,7 +195,7 @@
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     _referenceAttitude = nil;
-    [self setup];
+    [self motionManagerSetup];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -198,6 +214,7 @@
 - (IBAction)resetReference:(id)sender
 {
     _referenceAttitude = nil;
+    _factorSlider.value = (_factorSlider.maximumValue - _factorSlider.minimumValue) / 2.f + _factorSlider.minimumValue;
 }
 
 @end
