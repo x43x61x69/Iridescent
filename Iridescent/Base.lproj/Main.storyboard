@@ -66,7 +66,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2.5" minValue="1" maxValue="4" translatesAutoresizingMaskIntoConstraints="NO" id="Ggq-Gp-i1b">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="1" maxValue="3" translatesAutoresizingMaskIntoConstraints="NO" id="Ggq-Gp-i1b">
                                 <rect key="frame" x="46" y="617" width="283" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="445-qO-2Ff"/>

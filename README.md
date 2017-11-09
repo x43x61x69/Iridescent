@@ -10,10 +10,6 @@ This is a quick'n dirty recreation of Apple's iridescent effect on its new **
 
 (via [@techcrunch](https://www.instagram.com/p/BbNKWe1jdsP/))
 
-## To-Do
-
-- Transitions based on motion attitude.
-
 ## Requirements
 
 - Xcode 9.

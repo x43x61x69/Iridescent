@@ -6,9 +6,6 @@
 //  Copyright © 2017 Cai. All rights reserved.
 //
 
-#define redFromRGB(rgb)         ((CGFloat)((rgb & 0xFF0000) >> 16))
-#define greenFromRGB(rgb)       ((CGFloat)((rgb & 0xFF00) >> 8))
-#define blueFromRGB(rgb)        ((CGFloat)(rgb & 0xFF))
 #define UIColorFromRGB(rgb)     [UIColor colorWithRed:((CGFloat)((rgb & 0xFF0000) >> 16))/255.f green:((CGFloat)((rgb & 0xFF00) >> 8))/255.f blue:((CGFloat)(rgb & 0xFF))/255.f alpha:1.f]
 
 #define kGradientUpdateInterval 1.f / 60.f // Screen refresh rate = 60Hz
@@ -17,19 +14,8 @@
 #define kDefaultColorLower      0xD49D63
 #define kAlternateColorUpper    0x9E89E2
 #define kAlternateColorLower    0x825991
-#define kOUR                    redFromRGB(kDefaultColorUpper)
-#define kOUG                    greenFromRGB(kDefaultColorUpper)
-#define kOUB                    blueFromRGB(kDefaultColorUpper)
-#define kOLR                    redFromRGB(kDefaultColorLower)
-#define kOLG                    greenFromRGB(kDefaultColorLower)
-#define kOLB                    blueFromRGB(kDefaultColorLower)
-#define kAUR                    redFromRGB(kAlternateColorUpper)
-#define kAUG                    greenFromRGB(kAlternateColorUpper)
-#define kAUB                    blueFromRGB(kAlternateColorUpper)
-#define kALR                    redFromRGB(kAlternateColorLower)
-#define kALG                    greenFromRGB(kAlternateColorLower)
-#define kALB                    blueFromRGB(kAlternateColorLower)
-#define kDefaultColors          @[(id)[UIColorFromRGB(kAlternateColorUpper) CGColor], (id)[UIColorFromRGB(kAlternateColorLower) CGColor]]
+#define kDefaultColors          @[(id)[UIColorFromRGB(kDefaultColorUpper) CGColor], (id)[UIColorFromRGB(kDefaultColorLower) CGColor]]
+#define kAlternateColors        @[(id)[UIColorFromRGB(kAlternateColorUpper) CGColor], (id)[UIColorFromRGB(kAlternateColorLower) CGColor]]
 #define kBackgroundColors       @[(id)[UIColorFromRGB(0x141414) CGColor], (id)[UIColorFromRGB(0x030303) CGColor]]
 
 #import "ViewController.h"
@@ -63,21 +49,31 @@
     _cashLabel.textColor =
     _valueLabel.textColor = [UIColor whiteColor];
     _cardView.layer.backgroundColor = [UIColor clearColor].CGColor;
+    
     CAGradientLayer *backgroundGradientLayer = [CAGradientLayer layer];
     backgroundGradientLayer.frame         = _cardView.bounds;
     backgroundGradientLayer.colors        = kBackgroundColors;
     backgroundGradientLayer.cornerRadius  = 10.f;
     [_cardView.layer insertSublayer:backgroundGradientLayer atIndex:0];
     
+    CAGradientLayer *gradientBackgroundLayer = [CAGradientLayer layer];
+    gradientBackgroundLayer.frame = _cardView.bounds;
+    gradientBackgroundLayer.colors = kAlternateColors;
+    
+    CALayer *imageBackgroundLayer = [CALayer new];
+    imageBackgroundLayer.frame = gradientBackgroundLayer.frame;
+    imageBackgroundLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
+    gradientBackgroundLayer.mask = imageBackgroundLayer;
+    [_cardView.layer addSublayer:gradientBackgroundLayer];
+    
     _gradientLayer = [CAGradientLayer layer];
-    _gradientLayer.frame         = _cardView.bounds;
-    _gradientLayer.colors        = kDefaultColors;
+    _gradientLayer.frame = _cardView.bounds;
+    _gradientLayer.colors = kAlternateColors;
     
     CALayer *imageLayer = [CALayer new];
     imageLayer.frame = _gradientLayer.frame;
     imageLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
     _gradientLayer.mask = imageLayer;
-    
     [_cardView.layer addSublayer:_gradientLayer];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -161,29 +157,24 @@
         return;
     }
     
-    CGFloat f, xU, yU, zU, xL, yL, zL;
+    CGFloat xf = (CGFloat)(fabs(attitude.pitch) / M_PI * _factorSlider.value);
+    CGFloat yf = (CGFloat)(fabs(attitude.roll) / M_PI * _factorSlider.value);
+    CGFloat gf = pow((pow(xf, 2) + pow(yf, 2)), .5);
     
-    f = (CGFloat)(fabs(attitude.pitch + attitude.roll + attitude.yaw) / M_PI * _factorSlider.value);
-    
-    if (f > 1.f) {
-        f = 1.f - fmod(f, 1.f);
+    if (xf > 1.f) {
+        xf = 1.f - fmod(xf, 1.f);
     }
     
-    xU = kAUR + (kOUR - kAUR) * f;
-    yU = kAUG + (kOUG - kAUG) * f;
-    zU = kAUB + (kOUB - kAUB) * f;
-    xL = kALR + (kOLR - kALR) * f;
-    yL = kALG + (kOLG - kALG) * f;
-    zL = kALB + (kOLB - kALB) * f;
+    if (yf > 1.f) {
+        yf = 1.f - fmod(yf, 1.f);
+    }
     
-    _gradientLayer.colors = @[(id)[[UIColor colorWithRed:xU / 255.f
-                                                   green:yU / 255.f
-                                                    blue:zU / 255.f
-                                                   alpha:1.f] CGColor],
-                              (id)[[UIColor colorWithRed:xL / 255.f
-                                                   green:yL / 255.f
-                                                    blue:zL / 255.f
-                                                   alpha:1.f] CGColor]];
+    _gradientLayer.startPoint = CGPointMake(xf, yf);
+    _gradientLayer.endPoint = CGPointMake(1.f - xf, 1.f - yf);
+    _gradientLayer.locations = @[@(gf/2.f), @(gf), @1];
+    _gradientLayer.colors = @[(id)[UIColorFromRGB(kDefaultColorUpper) CGColor],
+                              (id)[UIColorFromRGB(kDefaultColorLower) CGColor],
+                              (id)[[UIColor clearColor] CGColor]];
 }
 
 #pragma mark - NSNotification
