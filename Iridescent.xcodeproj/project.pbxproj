@@ -13,6 +13,7 @@
 		429AFBB41FB2D09D00A8A61A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 429AFBB31FB2D09D00A8A61A /* Assets.xcassets */; };
 		429AFBB71FB2D09D00A8A61A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 429AFBB51FB2D09D00A8A61A /* LaunchScreen.storyboard */; };
 		429AFBBA1FB2D09D00A8A61A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 429AFBB91FB2D09D00A8A61A /* main.m */; };
+		42A8A4CC1FB5A751001ECD95 /* CCARadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A8A4CB1FB5A751001ECD95 /* CCARadialGradientLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,8 @@
 		429AFBB61FB2D09D00A8A61A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		429AFBB81FB2D09D00A8A61A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		429AFBB91FB2D09D00A8A61A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		42A8A4CA1FB5A751001ECD95 /* CCARadialGradientLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCARadialGradientLayer.h; sourceTree = "<group>"; };
+		42A8A4CB1FB5A751001ECD95 /* CCARadialGradientLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCARadialGradientLayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,7 @@
 		429AFBA91FB2D09D00A8A61A /* Iridescent */ = {
 			isa = PBXGroup;
 			children = (
+				42A8A4C91FB5A751001ECD95 /* CCARadialGradientLayer */,
 				429AFBAA1FB2D09D00A8A61A /* AppDelegate.h */,
 				429AFBAB1FB2D09D00A8A61A /* AppDelegate.m */,
 				429AFBAD1FB2D09D00A8A61A /* ViewController.h */,
@@ -71,6 +75,15 @@
 				429AFBB91FB2D09D00A8A61A /* main.m */,
 			);
 			path = Iridescent;
+			sourceTree = "<group>";
+		};
+		42A8A4C91FB5A751001ECD95 /* CCARadialGradientLayer */ = {
+			isa = PBXGroup;
+			children = (
+				42A8A4CA1FB5A751001ECD95 /* CCARadialGradientLayer.h */,
+				42A8A4CB1FB5A751001ECD95 /* CCARadialGradientLayer.m */,
+			);
+			path = CCARadialGradientLayer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,6 +159,7 @@
 			files = (
 				429AFBAF1FB2D09D00A8A61A /* ViewController.m in Sources */,
 				429AFBBA1FB2D09D00A8A61A /* main.m in Sources */,
+				42A8A4CC1FB5A751001ECD95 /* CCARadialGradientLayer.m in Sources */,
 				429AFBAC1FB2D09D00A8A61A /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

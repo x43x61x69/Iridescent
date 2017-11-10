@@ -18,3 +18,7 @@ This is a quick'n dirty recreation of Apple's iridescent effect on its new **
 ## License
 
 Copyright © 2017 Cai. All rights reserved.
+
+#### Externel Frameworks
+
+- *CCARadialGradientLayer* was created by Jean-Luc Dagon.
