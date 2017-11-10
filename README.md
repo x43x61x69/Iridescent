@@ -1,14 +1,10 @@
 # Iridescent
 
-![](preview.gif)
-
 ## Overview
 
-This is a quick'n dirty recreation of Apple's iridescent effect on its new ** Pay Cash Card** in iOS 11.2 beta:
+This is a quick'n dirty recreation of Apple's iridescent effect on its new ** Pay Cash Card** in iOS 11.2 beta.
 
-![](apple_pay_cash_card.gif)
-
-(via [@techcrunch](https://www.instagram.com/p/BbNKWe1jdsP/))
+![](preview.gif)
 
 ## Requirements
 
@@ -19,6 +15,4 @@ This is a quick'n dirty recreation of Apple's iridescent effect on its new **
 
 Copyright © 2017 Cai. All rights reserved.
 
-#### Externel Frameworks
-
-- *CCARadialGradientLayer* was created by Jean-Luc Dagon.
+*CCARadialGradientLayer* was created by Jean-Luc Dagon.
