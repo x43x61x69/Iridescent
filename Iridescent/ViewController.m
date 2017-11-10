@@ -50,8 +50,8 @@
     _valueLabel.textColor = [UIColor whiteColor];
     _cardView.layer.backgroundColor = [UIColor clearColor].CGColor;
     
-    _resetButton.layer.cornerRadius = 4.f;
-    _resetButton.layer.borderWidth = 1.f;
+    _resetButton.layer.cornerRadius = 4;
+    _resetButton.layer.borderWidth = 1;
     _resetButton.layer.borderColor = _resetButton.tintColor.CGColor;
     
     [self setup];
@@ -85,7 +85,7 @@
     CAGradientLayer *cardGradientLayer = [CAGradientLayer new];
     cardGradientLayer.frame         = _cardView.bounds;
     cardGradientLayer.colors        = kBackgroundColors;
-    cardGradientLayer.cornerRadius  = 10.f;
+    cardGradientLayer.cornerRadius  = 10;
     [_cardView.layer insertSublayer:cardGradientLayer
                             atIndex:0];
     
@@ -155,12 +155,8 @@
         return;
     }
     
-    const CGFloat xf = MAX(-1, MIN(1, attitude.roll / M_PI * kGradientFactor));
-    const CGFloat yf = MIN(1, fabs(MIN(0, attitude.pitch / M_PI * cos(attitude.yaw) * kGradientFactor)));
-    const CGFloat gf = MIN(1, sqrtf((powf(xf, 2) + powf(yf, 2))) / sqrt(2) * kGradientFactor);
-    
-    const CGFloat xf_mapped = 1 - (xf + 1) / 2;
-    const CGFloat yf_mapped = 1 + yf / 2;
+    const CGFloat xf = 1 - (MIN(1, MAX(-1, attitude.roll / M_PI * kGradientFactor)) + 1) / 2;
+    const CGFloat gf = MIN(1, sqrtf((powf(attitude.roll, 2) + powf(attitude.pitch * cos(attitude.yaw), 2))) / M_PI * kGradientFactor);
     
     // We were called from motionQueue, UI update must be done within the
     // mainQueue. Switch to mainQueue.
@@ -169,39 +165,27 @@
         [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue
                          forKey:kCATransactionDisableActions];
-        if (gf) {
-            _gradientLayer.locations = @[@0, @(1 - gf), @(1 - gf * .25), @(1 - gf * .5), @(1 - gf * .75), @1];
-            _gradientLayer.colors = @[(id)kAlternateColor,
-                                      (id)kAlternateColor,
-                                      (id)kDefaultColor0,
-                                      (id)kDefaultColor1,
-                                      (id)kDefaultColor2,
-                                      (id)kDefaultColor3];
-        } else {
-            _gradientLayer.locations = @[@0, @1];
-            _gradientLayer.colors = @[(id)kAlternateColor,
-                                      (id)kAlternateColor];
-        }
-        _gradientLayer.gradientOrigin = CGPointMake(xf_mapped * CGRectGetMaxX(_gradientLayer.bounds),
-                                                    yf_mapped * CGRectGetMaxY(_gradientLayer.bounds));
-        _gradientLayer.gradientRadius = sqrtf(powf(_gradientLayer.gradientOrigin.x - CGRectGetMidX(_gradientLayer.bounds), 2) +
-                                              powf(_gradientLayer.gradientOrigin.y, 2)) * 1.5;
+        _gradientLayer.locations = @[@0, @(1 - gf), @(1 - gf * .25), @(1 - gf * .5), @(1 - gf * .75), @1];
+        _gradientLayer.colors = @[(id)kAlternateColor,
+                                  (id)kAlternateColor,
+                                  (id)kDefaultColor0,
+                                  (id)kDefaultColor1,
+                                  (id)kDefaultColor2,
+                                  (id)kDefaultColor3];
+        _gradientLayer.gradientOrigin = CGPointMake(CGRectGetMaxX(_gradientLayer.bounds) * xf,
+                                                    CGRectGetMaxY(_gradientLayer.bounds));
+        _gradientLayer.gradientRadius = sqrtf(powf(xf >= .5 ? _gradientLayer.gradientOrigin.x : CGRectGetMaxX(_gradientLayer.bounds) - _gradientLayer.gradientOrigin.x, 2) +
+                                              powf(_gradientLayer.gradientOrigin.y, 2));
         // Update CATransaction.
         [CATransaction commit];
         
         _logView.text = [NSString stringWithFormat:
                          @"Motion: %.02f, %.02f, %.02f\n"
-                         @"Points: (%.02f, %.02f) -> %.02f\n"
-                         @"Gradient: %.02f (%.02f, %.02f)",
+                         @"Gradient: %.02f",
                          attitude.pitch,
                          attitude.roll,
                          attitude.yaw,
-                         _gradientLayer.gradientOrigin.x,
-                         _gradientLayer.gradientOrigin.y,
-                         _gradientLayer.gradientRadius,
-                         gf,
-                         xf,
-                         yf];
+                         gf];
     }];
 }
 
