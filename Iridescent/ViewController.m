@@ -16,7 +16,7 @@
 #define kDefaultColor3          UIColorFromRGB(0x7fc6c0).CGColor
 #define kDefaultColor4          UIColorFromRGB(0x69bdd9).CGColor
 #define kDefaultColor5          UIColorFromRGB(0x60789c).CGColor
-#define kBackgroundColors       @[(id)[UIColorFromRGB(0x141414) CGColor], (id)[UIColorFromRGB(0x030303) CGColor]]
+#define kBackgroundColors       @[(id)[UIColorFromRGB(0x111111) CGColor], (id)[[UIColor blackColor] CGColor]]
 
 #import "ViewController.h"
 #import <QuartzCore/QuartzCore.h>
