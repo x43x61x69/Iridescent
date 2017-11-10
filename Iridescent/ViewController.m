@@ -10,11 +10,12 @@
 
 #define kGradientFactor         M_PI        // Speed things up by multiplying a fixed value.
 #define kGradientUpdateInterval 1.f / 60.f  // iPhone screen refresh rate is @60Hz.
-#define kDefaultColor0          UIColorFromRGB(0xA9A1A3).CGColor
-#define kDefaultColor1          UIColorFromRGB(0xB8C9A3).CGColor
-#define kDefaultColor2          UIColorFromRGB(0xB6CCDC).CGColor
-#define kDefaultColor3          UIColorFromRGB(0xA4A8DE).CGColor
-#define kAlternateColor         UIColorFromRGB(0xA16DBF).CGColor
+#define kDefaultColor0          UIColorFromRGB(0x9567a9).CGColor
+#define kDefaultColor1          UIColorFromRGB(0xab88d3).CGColor
+#define kDefaultColor2          UIColorFromRGB(0xc69263).CGColor
+#define kDefaultColor3          UIColorFromRGB(0x7fc6c0).CGColor
+#define kDefaultColor4          UIColorFromRGB(0x69bdd9).CGColor
+#define kDefaultColor5          UIColorFromRGB(0x60789c).CGColor
 #define kBackgroundColors       @[(id)[UIColorFromRGB(0x141414) CGColor], (id)[UIColorFromRGB(0x030303) CGColor]]
 
 #import "ViewController.h"
@@ -89,15 +90,26 @@
     [_cardView.layer insertSublayer:cardGradientLayer
                             atIndex:0];
     
+    UIImage *maskImage = [UIImage imageNamed:@"mask"];
+    const CGFloat newHeight = _cardView.bounds.size.width * maskImage.size.height / maskImage.size.width;
+    
     CALayer *imageLayer = [CALayer new];
-    imageLayer.frame = _cardView.bounds;
-    imageLayer.contents = (__bridge id _Nullable)([[UIImage imageNamed:@"mask"] CGImage]);
+    imageLayer.frame = CGRectMake(0,
+                                  0,
+                                  _cardView.bounds.size.width,
+                                  newHeight);
+    imageLayer.contentsGravity = kCAGravityResizeAspect;
+    imageLayer.contents = (__bridge id _Nullable)([maskImage CGImage]);
     
     // Apple might be using CGContextDrawRadialGradient for the radial gradient.
     // We have to subclass CALayer to have this done in the future.
     _gradientLayer = [CCARadialGradientLayer new];
-    _gradientLayer.frame = _cardView.bounds;
-    _gradientLayer.colors = @[(id)kAlternateColor];
+    _gradientLayer.frame = CGRectMake(0,
+                                      _cardView.bounds.size.height - newHeight,
+                                      _cardView.bounds.size.width,
+                                      newHeight);
+    _gradientLayer.colors = @[(id)kDefaultColor0,
+                              (id)kDefaultColor1];
     _gradientLayer.mask = imageLayer;
     
     [_cardView.layer addSublayer:_gradientLayer];
@@ -166,12 +178,12 @@
         [CATransaction setValue:(id)kCFBooleanTrue
                          forKey:kCATransactionDisableActions];
         _gradientLayer.locations = @[@0, @(1 - gf), @(1 - gf * .25), @(1 - gf * .5), @(1 - gf * .75), @1];
-        _gradientLayer.colors = @[(id)kAlternateColor,
-                                  (id)kAlternateColor,
-                                  (id)kDefaultColor0,
+        _gradientLayer.colors = @[(id)kDefaultColor0,
                                   (id)kDefaultColor1,
                                   (id)kDefaultColor2,
-                                  (id)kDefaultColor3];
+                                  (id)kDefaultColor3,
+                                  (id)kDefaultColor4,
+                                  (id)kDefaultColor5];
         _gradientLayer.gradientOrigin = CGPointMake(CGRectGetMaxX(_gradientLayer.bounds) * xf,
                                                     CGRectGetMaxY(_gradientLayer.bounds));
         _gradientLayer.gradientRadius = sqrtf(powf(xf >= .5 ? _gradientLayer.gradientOrigin.x : CGRectGetMaxX(_gradientLayer.bounds) - _gradientLayer.gradientOrigin.x, 2) +
