@@ -10,9 +10,10 @@
 
 #define kGradientFactor         M_PI        // A 1/2 attitude (M_PI) is way too large for this effect, speed things up by multiplying a fixed value.
 #define kGradientUpdateInterval 1.f / 60.f  // iPhone screen refresh rate is @60Hz.
-#define kDefaultColor0          UIColorFromRGB(0xC3FFFA).CGColor
-#define kDefaultColor1          UIColorFromRGB(0xB8EFE9).CGColor
-#define kDefaultColor2          UIColorFromRGB(0x5DDEEC).CGColor
+#define kDefaultColor0          UIColorFromRGB(0xE4F7EC).CGColor
+#define kDefaultColor1          UIColorFromRGB(0xC3FFFA).CGColor
+#define kDefaultColor2          UIColorFromRGB(0xB8EFE9).CGColor
+#define kDefaultColor3          UIColorFromRGB(0x5DDEEC).CGColor
 #define kAlternateColor         UIColorFromRGB(0xC599F1).CGColor
 #define kBackgroundColors       @[(id)[UIColorFromRGB(0x141414) CGColor], (id)[UIColorFromRGB(0x030303) CGColor]]
 
@@ -154,7 +155,7 @@
     
     const CGFloat xf = MAX(-1, MIN(1, attitude.roll / M_PI * kGradientFactor));
     const CGFloat yf = MIN(1, fabs((MIN(0, attitude.pitch / M_PI * fabs(cos(attitude.yaw)) * kGradientFactor))));
-    const CGFloat gf = powf((powf(xf, 2) + powf(yf, 2)), .5) / powf(2, .5) * .95;
+    const CGFloat gf = MIN(1, powf((powf(xf, 2) + powf(yf, 2)), .5) / powf(2, .5) * kGradientFactor);
     
     const CGFloat xf_mapped = (xf + 1) / 2;
     const CGFloat yf_mapped = MIN(.6, yf);
@@ -168,10 +169,11 @@
                          forKey:kCATransactionDisableActions];
         _gradientLayer.startPoint = CGPointMake(xf_mapped, yf_mapped);
         _gradientLayer.endPoint = CGPointMake(fabs(1 - xf_mapped), 1 + yf_mapped / 2);
-        _gradientLayer.locations = @[@0, @(gf * .33), @(gf * .66), @(gf), @1];
+        _gradientLayer.locations = @[@0, @(gf * .2), @(gf * .4), @(gf * .6), @(gf * .8), @(gf), @1];
         _gradientLayer.colors = @[(id)kDefaultColor0,
                                   (id)kDefaultColor1,
                                   (id)kDefaultColor2,
+                                  (id)kDefaultColor3,
                                   (id)kAlternateColor,
                                   (id)kAlternateColor];
         // Update CATransaction.
