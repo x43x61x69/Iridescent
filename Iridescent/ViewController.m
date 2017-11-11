@@ -117,6 +117,7 @@
 
 - (void)motionManagerSetup
 {
+    _referenceAttitude = nil;
     _motionManager = [CMMotionManager new];
     
     if ([_motionManager isDeviceMotionAvailable]) {
@@ -205,7 +206,6 @@
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    _referenceAttitude = nil;
     [self motionManagerSetup];
 }
 
